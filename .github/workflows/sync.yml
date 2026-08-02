@@ -1,0 +1,28 @@
+name: Daily Sync
+
+on:
+  schedule:
+    - cron: '0 18 * * *'   # 每天 UTC 18:00（北京时间次日 02:00）
+  workflow_dispatch:        # 允许手动触发
+
+permissions:
+  contents: write          # 需要 push 回仓库
+
+jobs:
+  sync:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Scoop
+        shell: powershell
+        run: |
+          Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+          Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
+
+      - name: Sync manifests
+        shell: powershell
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: .\scripts\sync.ps1

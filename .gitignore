@@ -1,0 +1,4 @@
+# Editor / OS temp files
+*.tmp
+Thumbs.db
+Desktop.ini

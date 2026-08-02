@@ -1,0 +1,17 @@
+{
+  "version": "x.x.x",
+  "description": "App description",
+  "homepage": "https://example.com",
+  "license": "MIT",
+  "url": "https://example.com/download/app-x.x.x.zip",
+  "hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "extract_dir": "app",
+  "bin": "app.exe",
+  "shortcuts": [
+    ["app.exe", "App Name"]
+  ],
+  "checkver": "github",
+  "autoupdate": {
+    "github": "owner/repo"
+  }
+}
