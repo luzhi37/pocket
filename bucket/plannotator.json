@@ -14,9 +14,6 @@
     }
   },
   "bin": "plannotator.exe",
-  "shortcuts": [
-    ["plannotator.exe", "Plannotator"]
-  ],
   "checkver": "github",
   "autoupdate": {
     "github": "backnotprop/plannotator"

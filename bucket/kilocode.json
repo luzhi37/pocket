@@ -14,9 +14,6 @@
     }
   },
   "bin": "kilo.exe",
-  "shortcuts": [
-    ["kilo.exe", "Kilo Code"]
-  ],
   "checkver": "github",
   "autoupdate": {
     "github": "Kilo-Org/kilocode"

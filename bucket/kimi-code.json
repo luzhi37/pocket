@@ -14,9 +14,6 @@
     }
   },
   "bin": "kimi.exe",
-  "shortcuts": [
-    ["kimi.exe", "Kimi Code"]
-  ],
   "checkver": "github",
   "autoupdate": {
     "github": "moonshotai/kimi-code"
