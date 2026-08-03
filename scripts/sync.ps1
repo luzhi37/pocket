@@ -6,12 +6,16 @@
 #>
 
 param(
-    [string]$BucketDir = Join-Path $PSScriptRoot '..\bucket',
+    [string]$BucketDir,
     [switch]$DryRun
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+
+if (-not $BucketDir) {
+    $BucketDir = Join-Path $PSScriptRoot '..\bucket'
+}
 
 $token = $env:GITHUB_TOKEN
 if (-not $token) {
