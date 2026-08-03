@@ -1,0 +1,24 @@
+{
+  "version": "0.25.1",
+  "description": "Annotate and review coding agent plans and code diffs visually, share with your team, send feedback to agents with one click.",
+  "homepage": "https://plannotator.ai",
+  "license": "Apache-2.0",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/backnotprop/plannotator/releases/download/v0.25.1/plannotator-win32-x64.exe",
+      "hash": "sha256:be4dd762fbd30533b66d10412f7f9d174d250732da3438a620cf7e60edd74be3"
+    },
+    "arm64": {
+      "url": "https://github.com/backnotprop/plannotator/releases/download/v0.25.1/plannotator-win32-arm64.exe",
+      "hash": "sha256:ae778b632d0a4502b67d4022d479433c0ab7abc8e639b7c172492a446cc42653"
+    }
+  },
+  "bin": "plannotator.exe",
+  "shortcuts": [
+    ["plannotator.exe", "Plannotator"]
+  ],
+  "checkver": "github",
+  "autoupdate": {
+    "github": "backnotprop/plannotator"
+  }
+}
