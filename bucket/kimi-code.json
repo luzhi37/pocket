@@ -1,28 +1,28 @@
-{
-  "version": "0.31.1",
-  "description": "AI coding agent CLI by Moonshot AI for terminal-based code editing, shell execution, and web retrieval.",
-  "homepage": "https://github.com/moonshotai/kimi-code",
-  "license": "MIT",
-  "architecture": {
-    "64bit": {
-      "url": "https://github.com/MoonshotAI/kimi-code/releases/download/@moonshot-ai/kimi-code@0.31.1/kimi-code-win32-x64.zip",
-      "hash": "sha256:dbaf50aae3f179e8b1c2a8b5d30589d67eded430721ad46e0abafdcfedb3473d"
-    },
-    "arm64": {
-      "url": "https://github.com/MoonshotAI/kimi-code/releases/download/@moonshot-ai/kimi-code@0.31.1/kimi-code-win32-arm64.zip",
-      "hash": "sha256:311abea860a559d21b79b0dad01e0b4a9d90480291239286730d96141bea7e26"
-    }
-  },
-  "bin": "kimi.exe",
-  "checkver": {
-    "url": "https://api.github.com/repos/moonshotai/kimi-code/releases",
-    "re": "@moonshot-ai/kimi-code@(\\d+\\.\\d+\\.\\d+)$"
-  },
-  "autoupdate": {
-    "github": "moonshotai/kimi-code"
-  },
-  "post_install": [
-    "Write-Host 'NOTE: Git for Windows must be installed for kimi-code to work.' -ForegroundColor Yellow",
-    "Write-Host \"If Git Bash is not found automatically, set the `$env:KIMI_SHELL_PATH environment variable to bash.exe.\" -ForegroundColor Yellow"
-  ]
+﻿{
+    "version":  "0.34.0",
+    "description":  "AI coding agent CLI by Moonshot AI for terminal-based code editing, shell execution, and web retrieval.",
+    "homepage":  "https://github.com/moonshotai/kimi-code",
+    "license":  "MIT",
+    "architecture":  {
+                         "64bit":  {
+                                       "url":  "https://github.com/MoonshotAI/kimi-code/releases/download/@moonshot-ai/kimi-code@0.34.0/kimi-code-win32-x64.zip",
+                                       "hash":  "sha256:13cae7d4e7f09a29892922b46bd82322b835acc1ae40cbf15e42081178eaca4f"
+                                   },
+                         "arm64":  {
+                                       "url":  "https://github.com/MoonshotAI/kimi-code/releases/download/@moonshot-ai/kimi-code@0.34.0/kimi-code-win32-arm64.zip",
+                                       "hash":  "sha256:6a44c456058898e7eea18b0bfbe7f893c706661d39e3d5d9ba6384a39e95a79a"
+                                   }
+                     },
+    "bin":  "kimi.exe",
+    "checkver":  {
+                     "url":  "https://api.github.com/repos/moonshotai/kimi-code/releases",
+                     "re":  "@moonshot-ai/kimi-code@(\\d+\\.\\d+\\.\\d+)$"
+                 },
+    "autoupdate":  {
+                       "github":  "moonshotai/kimi-code"
+                   },
+    "post_install":  [
+                         "Write-Host \u0027NOTE: Git for Windows must be installed for kimi-code to work.\u0027 -ForegroundColor Yellow",
+                         "Write-Host \"If Git Bash is not found automatically, set the `$env:KIMI_SHELL_PATH environment variable to bash.exe.\" -ForegroundColor Yellow"
+                     ]
 }

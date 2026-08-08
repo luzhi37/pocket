@@ -1,24 +1,24 @@
-{
-  "version": "7.4.18",
-  "description": "All-in-one agentic engineering platform. Build, ship, and iterate faster with the most popular open source coding agent.",
-  "homepage": "https://github.com/Kilo-Org/kilocode",
-  "license": "MIT",
-  "architecture": {
-    "64bit": {
-      "url": "https://github.com/Kilo-Org/kilocode/releases/download/v7.4.18/kilo-windows-x64.zip",
-      "hash": "sha256:b01c3597a9526cbf44cfe3623c28ed758d16c794697bf16e0d042e22502d20a5"
-    },
-    "arm64": {
-      "url": "https://github.com/Kilo-Org/kilocode/releases/download/v7.4.18/kilo-windows-arm64.zip",
-      "hash": "sha256:b8296dbfc2769e9dfc94f016b1a4de187dd596302b5ca8c6b000a81fb5be2284"
-    }
-  },
-  "bin": "kilo.exe",
-  "checkver": {
-    "url": "https://api.github.com/repos/Kilo-Org/kilocode/releases",
-    "re": "^v(\\d+\\.\\d+\\.\\d+)$"
-  },
-  "autoupdate": {
-    "github": "Kilo-Org/kilocode"
-  }
+﻿{
+    "version":  "7.4.20",
+    "description":  "All-in-one agentic engineering platform. Build, ship, and iterate faster with the most popular open source coding agent.",
+    "homepage":  "https://github.com/Kilo-Org/kilocode",
+    "license":  "MIT",
+    "architecture":  {
+                         "64bit":  {
+                                       "url":  "https://github.com/Kilo-Org/kilocode/releases/download/v7.4.20/kilo-windows-x64.zip",
+                                       "hash":  "sha256:b47e9d7a99f62973fe919224d588628964d9c818ab8283e90c9441b8455739cf"
+                                   },
+                         "arm64":  {
+                                       "url":  "https://github.com/Kilo-Org/kilocode/releases/download/v7.4.20/kilo-windows-arm64.zip",
+                                       "hash":  "sha256:6bbb24b002e77ac292bcc50c3dc2b43bc85422745820dd4edc8f71372222bbf5"
+                                   }
+                     },
+    "bin":  "kilo.exe",
+    "checkver":  {
+                     "url":  "https://api.github.com/repos/Kilo-Org/kilocode/releases",
+                     "re":  "^v(\\d+\\.\\d+\\.\\d+)$"
+                 },
+    "autoupdate":  {
+                       "github":  "Kilo-Org/kilocode"
+                   }
 }
