@@ -42,7 +42,18 @@ function Get-AssetHash($url) {
     Write-Host "    Downloading and hashing: $url" -ForegroundColor DarkGray
     $tmpFile = Join-Path $env:TEMP ("asset-" + [Guid]::NewGuid().ToString())
     try {
-        Invoke-WebRequest -Uri $url -OutFile $tmpFile -UseBasicParsing -ErrorAction Stop
+        $attempt = 0
+        do {
+            $attempt++
+            try {
+                Invoke-WebRequest -Uri $url -OutFile $tmpFile -UseBasicParsing -ErrorAction Stop
+                break
+            } catch {
+                if ($attempt -ge 3) { throw }
+                Write-Warning "  Download failed (attempt $attempt/3), retrying: $_"
+                Start-Sleep -Seconds 3
+            }
+        } while ($true)
         $hash = (Get-FileHash -Path $tmpFile -Algorithm SHA256).Hash.ToLower()
         return $hash
     } catch {
@@ -103,9 +114,9 @@ foreach ($m in $manifests) {
             $releases = Invoke-RestMethod -Uri $checkver.url -Headers $headers -ErrorAction Stop
             $re = [regex]::new($checkver.re)
             foreach ($rel in $releases) {
-                $m = $re.Match($rel.tag_name)
-                if ($m.Success) {
-                    $newVersion = $m.Groups[1].Value
+                $match = $re.Match($rel.tag_name)
+                if ($match.Success) {
+                    $newVersion = $match.Groups[1].Value
                     Write-Host "  Found CLI release: $($rel.tag_name)" -ForegroundColor Cyan
                     break
                 }
@@ -151,6 +162,7 @@ foreach ($m in $manifests) {
     $updatedManifest = $manifest.PSObject.Copy()
     $updatedManifest.version = $newVersion
 
+    $failedArch = $false
     foreach ($arch in $archs.Keys) {
         $oldUrl = $archs[$arch].url
         # Replace old version in URL with new version (literal replace; both
@@ -166,12 +178,18 @@ foreach ($m in $manifests) {
             $newHash = Get-AssetHash $newUrl
             if (-not $newHash) {
                 Write-Host "  [$arch] Failed to download asset, skipping" -ForegroundColor Red
+                $failedArch = $true
                 continue
             }
             Write-Host "  [$arch] hash: $newHash" -ForegroundColor DarkGray
             $updatedManifest.architecture.$arch.url = $newUrl
             $updatedManifest.architecture.$arch.hash = "sha256:$newHash"
         }
+    }
+
+    if ($failedArch) {
+        Write-Warning "  Skipped writing ${slug}: download failed for one or more architectures"
+        continue
     }
 
     if (-not $DryRun) {
