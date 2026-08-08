@@ -14,7 +14,10 @@
     }
   },
   "bin": "kilo.exe",
-  "checkver": "github",
+  "checkver": {
+    "url": "https://api.github.com/repos/Kilo-Org/kilocode/releases",
+    "re": "^v(\\d+\\.\\d+\\.\\d+)$"
+  },
   "autoupdate": {
     "github": "Kilo-Org/kilocode"
   }

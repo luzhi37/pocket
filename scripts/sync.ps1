@@ -42,9 +42,12 @@ function Get-AssetHash($url) {
     Write-Host "    Downloading and hashing: $url" -ForegroundColor DarkGray
     $tmpFile = Join-Path $env:TEMP ("asset-" + [Guid]::NewGuid().ToString())
     try {
-        Invoke-WebRequest -Uri $url -OutFile $tmpFile -UseBasicParsing -ErrorAction SilentlyContinue
+        Invoke-WebRequest -Uri $url -OutFile $tmpFile -UseBasicParsing -ErrorAction Stop
         $hash = (Get-FileHash -Path $tmpFile -Algorithm SHA256).Hash.ToLower()
         return $hash
+    } catch {
+        Write-Warning "  Failed to download asset: $_"
+        return $null
     } finally {
         if (Test-Path $tmpFile) { Remove-Item $tmpFile -Force }
     }
@@ -60,8 +63,8 @@ foreach ($m in $manifests) {
     $slug = $m.BaseName
     $manifest = Get-Content $m.FullName -Raw | ConvertFrom-Json
 
-    if ($manifest.checkver -ne 'github' -or -not $manifest.autoupdate) {
-        Write-Host "[$slug] Skipped (no checkver:github)" -ForegroundColor DarkGray
+    if (-not $manifest.autoupdate) {
+        Write-Host "[$slug] Skipped (no autoupdate)" -ForegroundColor DarkGray
         continue
     }
 
@@ -81,11 +84,49 @@ foreach ($m in $manifests) {
 
     Write-Host "[$slug] Checking $owner/$repo..." -ForegroundColor Yellow
 
-    $release = Get-LatestRelease $owner $repo
-    if (-not $release) { continue }
-
-    $newVersion = $release.tag_name.TrimStart('v')
     $currentVersion = $manifest.version
+    $newVersion = $null
+
+    # Support two checkver formats:
+    #   1. "checkver": "github"              → use /releases/latest (simple)
+    #   2. "checkver": { "url": "...", "re": "..." } → filter releases list by regex
+    $checkver = $manifest.checkver
+    if ($checkver -is [string] -and $checkver -eq 'github') {
+        # Simple format: fetch latest release
+        $release = Get-LatestRelease $owner $repo
+        if (-not $release) { continue }
+        $newVersion = $release.tag_name.TrimStart('v')
+    } elseif ($checkver -is [PSCustomObject] -and $checkver.url -and $checkver.re) {
+        # Regex format: fetch releases list and find first match
+        Write-Host "  Using regex: $($checkver.re)" -ForegroundColor DarkGray
+        try {
+            $releases = Invoke-RestMethod -Uri $checkver.url -Headers $headers -ErrorAction Stop
+            $re = [regex]::new($checkver.re)
+            foreach ($rel in $releases) {
+                $m = $re.Match($rel.tag_name)
+                if ($m.Success) {
+                    $newVersion = $m.Groups[1].Value
+                    Write-Host "  Found CLI release: $($rel.tag_name)" -ForegroundColor Cyan
+                    break
+                }
+            }
+            if (-not $newVersion) {
+                Write-Warning "  No matching release found for regex: $($checkver.re)"
+                continue
+            }
+        } catch {
+            Write-Warning "  Failed to fetch releases: $_"
+            continue
+        }
+    } else {
+        Write-Host "[$slug] Skipped (unsupported checkver format)" -ForegroundColor DarkGray
+        continue
+    }
+
+    if ($newVersion -notmatch '^[0-9][0-9A-Za-z.\-+]*$') {
+        Write-Warning "  Skipped: version '$newVersion' is not version-shaped"
+        continue
+    }
 
     if ($newVersion -eq $currentVersion) {
         Write-Host "  Up to date: $currentVersion" -ForegroundColor Green
@@ -112,9 +153,9 @@ foreach ($m in $manifests) {
 
     foreach ($arch in $archs.Keys) {
         $oldUrl = $archs[$arch].url
-        # Replace old version in URL with new version
-        $newUrl = $oldUrl -replace [regex]::Escape($currentVersion), [regex]::Escape($newVersion)
-        $newUrl = $newUrl -replace [regex]::Escape("v$currentVersion"), [regex]::Escape("v$newVersion")
+        # Replace old version in URL with new version (literal replace; both
+        # `v<ver>` and `@pkg@<ver>` URL forms contain the bare version)
+        $newUrl = $oldUrl.Replace($currentVersion, $newVersion)
 
         Write-Host "  [$arch] URL: $newUrl" -ForegroundColor DarkGray
 

@@ -14,7 +14,10 @@
     }
   },
   "bin": "kimi.exe",
-  "checkver": "github",
+  "checkver": {
+    "url": "https://api.github.com/repos/moonshotai/kimi-code/releases",
+    "re": "@moonshot-ai/kimi-code@(\\d+\\.\\d+\\.\\d+)$"
+  },
   "autoupdate": {
     "github": "moonshotai/kimi-code"
   },
