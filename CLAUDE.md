@@ -14,7 +14,7 @@ bucket/                  # Scoop bucket root — manifests go here
 └── kilocode.json
 scripts/                 # Tooling
 ├── template.json        # Scaffold for new manifests
-└── update.ps1           # Regenerate index + validate
+└── sync.ps1             # Sync upstream versions
 .gitignore               # Ignores bucket/ index cache
 ```
 
@@ -38,8 +38,7 @@ scoop checkver <slug> # verify upstream version
 1. Copy `scripts/template.json` to `bucket/<slug>.json`.
 2. Fill in version, URL, and SHA256 hash.
 3. Run `scoop test` and fix any errors.
-4. Regenerate bucket index: `.\scripts\update.ps1`.
-5. Commit the manifest and updated `bucket/*.json` index.
+4. Commit the manifest.
 
 ## Updating a package
 

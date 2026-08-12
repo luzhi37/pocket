@@ -64,6 +64,24 @@ function Get-AssetHash($url) {
     }
 }
 
+function Update-ReadmeVersion($slug, $newVersion) {
+    $readmePath = Join-Path $PSScriptRoot '..\README.md'
+    if (-not (Test-Path $readmePath)) {
+        Write-Warning "  README.md not found, skipping version sync"
+        return
+    }
+    $raw = [IO.File]::ReadAllText((Resolve-Path $readmePath))
+    # Capture group 1 = "| [slug](url) |", group 2 = "description | "
+    # The version column follows group 2 and is discarded by the replacement.
+    $pattern = '\| \[' + [regex]::Escape($slug) + '\]\([^)]*\) \|'
+    $re = [regex]::new("(?m)^($pattern)([^|]+ \| )([^|]+ \|)$")
+    $newContent = $re.Replace($raw, { param($m) $m.Groups[1].Value + $m.Groups[2].Value + "${newVersion} |" })
+    if ($newContent -ne $raw) {
+        [IO.File]::WriteAllText((Resolve-Path $readmePath), $newContent, [Text.UTF8Encoding]::new($false))
+        Write-Host "  README.md: updated $slug version to $newVersion" -ForegroundColor DarkGray
+    }
+}
+
 Write-Host "`n=== Scoop Bucket Sync ===" -ForegroundColor Cyan
 if ($DryRun) { Write-Host "(DRY RUN - no files will be modified)" -ForegroundColor Yellow }
 
@@ -141,6 +159,10 @@ foreach ($m in $manifests) {
 
     if ($newVersion -eq $currentVersion) {
         Write-Host "  Up to date: $currentVersion" -ForegroundColor Green
+        # Keep README in sync even when manifest is already current
+        if (-not $DryRun) {
+            Update-ReadmeVersion $slug $newVersion
+        }
         continue
     }
 
@@ -194,10 +216,12 @@ foreach ($m in $manifests) {
 
     if (-not $DryRun) {
         $updatedManifest | ConvertTo-Json -Depth 10 | Set-Content $m.FullName -Encoding UTF8
+        Update-ReadmeVersion $slug $newVersion
         $updated += $slug
         Write-Host "  Updated: $m.Name" -ForegroundColor Green
     } else {
         $updated += "$slug (dry-run)"
+        Write-Host "  README.md: would update $slug version to $newVersion" -ForegroundColor DarkGray
     }
 }
 
