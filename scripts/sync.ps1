@@ -74,7 +74,7 @@ function Update-ReadmeVersion($slug, $newVersion) {
     # Capture group 1 = "| [slug](url) |", group 2 = "description | "
     # The version column follows group 2 and is discarded by the replacement.
     $pattern = '\| \[' + [regex]::Escape($slug) + '\]\([^)]*\) \|'
-    $re = [regex]::new("(?m)^($pattern)([^|]+ \| )([^|]+ \|)$")
+    $re = [regex]::new("(?m)^($pattern)([^|]+ \| )([^|]+ \|)\r?$")
     $newContent = $re.Replace($raw, { param($m) $m.Groups[1].Value + $m.Groups[2].Value + "${newVersion} |" })
     if ($newContent -ne $raw) {
         [IO.File]::WriteAllText((Resolve-Path $readmePath), $newContent, [Text.UTF8Encoding]::new($false))
