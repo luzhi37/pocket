@@ -25,4 +25,4 @@ jobs:
         shell: powershell
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: .\scripts\sync.ps1
+        run: .\bin\sync.ps1

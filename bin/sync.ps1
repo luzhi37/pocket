@@ -82,6 +82,51 @@ function Update-ReadmeVersion($slug, $newVersion) {
     }
 }
 
+function Format-Json {
+    param([Parameter(ValueFromPipeline)] [string]$Json)
+    # Properly indent JSON with 4 spaces per level (fixes PowerShell's irregular ConvertTo-Json indentation)
+    $indent = 0
+    $sb = [System.Text.StringBuilder]::new()
+    $i = 0
+    $inString = $false
+    # Tokenize and re-indent
+    while ($i -lt $Json.Length) {
+        $c = $Json[$i]
+        if ($c -eq '"') {
+            $inString = -not $inString
+            [void]$sb.Append($c)
+        } elseif ($inString) {
+            [void]$sb.Append($c)
+        } elseif ($c -in " ", "`t", "`r", "`n") {
+            # skip whitespace outside strings
+        } elseif ($c -in '{', '[') {
+            [void]$sb.Append($c)
+            [void]$sb.Append("`n")
+            $indent++
+            [void]$sb.Append(' ' * ($indent * 4))
+        } elseif ($c -in '}', ']') {
+            [void]$sb.Append("`n")
+            $indent--
+            [void]$sb.Append(' ' * ($indent * 4))
+            [void]$sb.Append($c)
+        } elseif ($c -eq ',') {
+            [void]$sb.Append($c)
+            [void]$sb.Append("`n")
+            [void]$sb.Append(' ' * ($indent * 4))
+        } elseif ($c -eq ':') {
+            # Avoid adding space before `:` for inline objects in arrays
+            if ($sb.Length -gt 0 -and $sb[$sb.Length - 1] -eq ' ') {
+                # already has space, skip
+            }
+            [void]$sb.Append(': ')
+        } else {
+            [void]$sb.Append($c)
+        }
+        $i++
+    }
+    return $sb.ToString().TrimEnd("`r", "`n") + "`n"
+}
+
 Write-Host "`n=== Scoop Bucket Sync ===" -ForegroundColor Cyan
 if ($DryRun) { Write-Host "(DRY RUN - no files will be modified)" -ForegroundColor Yellow }
 
@@ -215,7 +260,7 @@ foreach ($m in $manifests) {
     }
 
     if (-not $DryRun) {
-        $updatedManifest | ConvertTo-Json -Depth 10 | Set-Content $m.FullName -Encoding UTF8
+        $updatedManifest | ConvertTo-Json -Depth 20 | Format-Json | Set-Content $m.FullName -Encoding UTF8
         Update-ReadmeVersion $slug $newVersion
         $updated += $slug
         Write-Host "  Updated: $m.Name" -ForegroundColor Green

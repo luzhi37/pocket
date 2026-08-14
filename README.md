@@ -18,7 +18,8 @@ scoop bucket add personal https://github.com/luzhi37/pocket.git
 
 ## 自动同步
 
-仓库包含 [`.github/workflows/sync.yml`](.github/workflows/sync.yml)，每天自动检查上游最新版本并提交更新。
+仓库包含 [`.github/workflows/sync.yml`](.github/workflows/sync.yml)，每天自动检查上游最新版本并提交更新。  
+另有 [`.github/workflows/validate.yml`](.github/workflows/validate.yml) 在每次推送时自动校验 manifest 格式。
 
 ## 目录结构
 
@@ -27,16 +28,26 @@ bucket/                  # Scoop 清单目录，每个包一个 JSON 文件
 ├── kimi-code.json
 ├── kilocode.json
 └── plannotator.json
-scripts/                 # 工具脚本
-├── template.json        # 新清单模板
-├── update.ps1           # 重新生成索引并验证
+bin/                     # 维护工具脚本
 └── sync.ps1             # 自动同步上游版本
+template.json            # 新清单模板
+LICENSE                  # MIT 许可证
 ```
+
+## 本地开发
+
+注册本地 bucket 后，将 `bin/sync.ps1` 配合 `-DryRun` 参数可测试更新：
+
+```powershell
+cd D:\Code\Web\pocket
+.\bin\sync.ps1 -DryRun      # 模拟检查更新，不修改文件
+```
+
+详细 git 工作流见 [`GIT_WORKFLOW.md`](GIT_WORKFLOW.md)。
 
 ## 添加新包
 
-1. 复制 `scripts/template.json` 到 `bucket/<slug>.json`
+1. 复制 `template.json` 到 `bucket/<slug>.json`
 2. 填写 version、url 和 SHA256 hash
-3. 运行 `scoop test <slug>` 验证（需先注册本地 bucket）
-4. 运行 `.\scripts\update.ps1` 重新生成索引
-5. 提交并推送
+3. 运行 `scoop install D:\Code\Web\pocket\bucket\<slug>.json` 验证（需先注册本地 bucket）
+4. 提交并推送

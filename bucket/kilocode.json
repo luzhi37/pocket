@@ -1,24 +1,25 @@
 ﻿{
-    "version":  "7.4.21",
-    "description":  "All-in-one agentic engineering platform. Build, ship, and iterate faster with the most popular open source coding agent.",
-    "homepage":  "https://github.com/Kilo-Org/kilocode",
-    "license":  "MIT",
-    "architecture":  {
-                         "64bit":  {
-                                       "url":  "https://github.com/Kilo-Org/kilocode/releases/download/v7.4.21/kilo-windows-x64.zip",
-                                       "hash":  "sha256:143d34eb7d9d959f7d6226c6030264a181d6d96222c5ecf42a7528e68111f091"
-                                   },
-                         "arm64":  {
-                                       "url":  "https://github.com/Kilo-Org/kilocode/releases/download/v7.4.21/kilo-windows-arm64.zip",
-                                       "hash":  "sha256:9ba0a24108894c61d10668d6adcaaa02a2e2c769a90ccac66911cc3471b61626"
-                                   }
-                     },
-    "bin":  "kilo.exe",
-    "checkver":  {
-                     "url":  "https://api.github.com/repos/Kilo-Org/kilocode/releases",
-                     "re":  "^v(\\d+\\.\\d+\\.\\d+)$"
-                 },
-    "autoupdate":  {
-                       "github":  "Kilo-Org/kilocode"
-                   }
+    "version": "7.4.21",
+    "description": "All-in-one agentic engineering platform. Build, ship, and iterate faster with the most popular open source coding agent.",
+    "homepage": "https://github.com/Kilo-Org/kilocode",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Kilo-Org/kilocode/releases/download/v7.4.21/kilo-windows-x64.zip",
+            "hash": "sha256:143d34eb7d9d959f7d6226c6030264a181d6d96222c5ecf42a7528e68111f091"
+        },
+        "arm64": {
+            "url": "https://github.com/Kilo-Org/kilocode/releases/download/v7.4.21/kilo-windows-arm64.zip",
+            "hash": "sha256:9ba0a24108894c61d10668d6adcaaa02a2e2c769a90ccac66911cc3471b61626"
+        }
+    },
+    "bin": "kilo.exe",
+    "checkver": {
+        "url": "https://api.github.com/repos/Kilo-Org/kilocode/releases",
+        "re": "^v(\\d+\\.\\d+\\.\\d+)$"
+    },
+    "autoupdate": {
+        "github": "Kilo-Org/kilocode"
+    }
 }
+
