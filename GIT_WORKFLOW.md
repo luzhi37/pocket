@@ -3,23 +3,23 @@
 本仓库的 git 流程说明。仓库特点：
 
 - `main` 分支由 GitHub Actions 自动更新（`sync.yml` 每天 UTC 18:00 跑）。
-- 所有手动修改统一在 `chore/readme-sync` 分支上进行，保持远程分支名整洁。
+- 所有手动修改在独立的功能分支上进行，分支名使用 `chore/<描述>` 格式，完成后删除。
 
 ---
 
 ## 日常开发流程
 
-### 1. 开始新一批修改
+### 1. 创建新分支
 
 ```bash
 # 拉取远程最新状态
 git fetch origin
 
-# 将 chore/readme-sync 重置到 origin/main（丢弃上一次的旧改动）
-git checkout -B chore/readme-sync origin/main
+# 从最新 main 创建新分支，分支名描述本次改动
+git checkout -b chore/<描述> origin/main
 ```
 
-`-B` 会强制重置已有分支，效果等同于删除重建。
+分支名示例：`chore/repo-improvements`、`chore/add-package-xxx`、`chore/fix-ci`。
 
 ### 2. 修改并提交（开发阶段）
 
@@ -61,47 +61,75 @@ refactor: ... 重构
 ### 4. 推送到远程
 
 ```bash
-git push origin chore/readme-sync --force
+git push origin chore/<描述> -u
 ```
-
-> 因为每次重置到 `origin/main` 并 squash，`chore/readme-sync` 的历史会被重写，所以必须用 `--force`（或 `--force-with-lease`）。单人分支，安全。
 
 ### 5. 创建 PR 并合并到 main
 
-在 GitHub 上打开 `chore/readme-sync → main` 的 PR，审核后合并。
+```bash
+# 创建 PR（自动从当前分支到 main）
+gh pr create --fill
 
-合并后，远程的 `chore/readme-sync` 分支可以留着，下次开始新工作时执行第 1 步即可重置。
+# 合并（squash，保留一条 commit）
+gh pr merge --squash --delete-branch
+```
+
+> `--delete-branch` 会自动删除远程分支和本地分支。如果没有 `gh` 命令行，也可以在 GitHub 网页上操作。
+
+### 6. 清理本地分支
+
+如果 `gh pr merge --delete-branch` 没有自动删除本地分支，手动删除：
+
+```bash
+git branch -D chore/<描述>
+```
 
 ---
 
 ## 完整示例
 
 ```bash
-# 开始新工作
+# 1. 创建分支
 git fetch origin
-git checkout -B chore/readme-sync origin/main
+git checkout -b chore/update-readme origin/main
 
-# 修改多个文件，过程中分多次提交
+# 2. 修改文件，多次提交
 git add README.md
-git commit -m "wip: update package table"
+git commit -m "wip: update package versions"
 
 git add AGENTS.md
 git commit -m "wip: add git workflow section"
 
-# 推送前 squash 为一条
+# 3. squash 为一条
 git reset --soft origin/main
 git add -A
 git commit -m "docs: sync README and AGENTS with repo conventions"
 
-# 推送
-git push origin chore/readme-sync --force
+# 4. 推送
+git push origin chore/update-readme -u
+
+# 5. 创建 PR 并合并
+gh pr create --fill
+gh pr merge --squash --delete-branch
 ```
+
+---
+
+## gh CLI 快速参考
+
+| 命令 | 说明 |
+|------|------|
+| `gh pr create --fill` | 创建 PR，用 commit message 自动填充标题和描述 |
+| `gh pr create --title "..." --body "..."` | 创建 PR，指定标题和描述 |
+| `gh pr merge --squash --delete-branch` | Squash 合并并删除分支 |
+| `gh pr view --web` | 在浏览器中打开当前分支的 PR |
+| `gh pr list` | 列出当前仓库的 PR |
 
 ---
 
 ## 注意事项
 
 - **不要在 `main` 上直接修改**。`main` 只接受 PR merge 和自动更新。
-- **`--force` 只用于 `chore/readme-sync`**，不要对 `main` 使用。
-- 如果多人协作（目前是单人），注意 `--force` 会覆盖远程历史，其他人需要 rebase。
-- 自动更新 workflow 的 commit 会直接推送到 `main`，你的分支在 reset 时天然会包含这些更新。
+- 分支名用 `chore/` 前缀，保持与自动更新 commit 风格一致。
+- 自动更新 workflow 的 commit 会直接推送到 `main`，你的新分支从 `origin/main` 创建时天然会包含这些更新。
+- 每次改动只提交一条 commit，保持 `main` 历史清晰。
