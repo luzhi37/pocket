@@ -2,3 +2,6 @@
 *.tmp
 Thumbs.db
 Desktop.ini
+
+# Scoop bucket index cache (created when registering bucket locally)
+.scoop/

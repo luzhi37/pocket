@@ -1,0 +1,24 @@
+{
+    "version": "0.0.1",
+    "description": "App description",
+    "homepage": "https://example.com",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/owner/repo/releases/download/v0.0.1/app-0.0.1-win64.zip",
+            "hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "arm64": {
+            "url": "https://github.com/owner/repo/releases/download/v0.0.1/app-0.0.1-win-arm64.zip",
+            "hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        }
+    },
+    "bin": "app.exe",
+    "checkver": {
+        "url": "https://api.github.com/repos/owner/repo/releases",
+        "re": "v(\\d+\\.\\d+\\.\\d+)$"
+    },
+    "autoupdate": {
+        "github": "owner/repo"
+    }
+}
