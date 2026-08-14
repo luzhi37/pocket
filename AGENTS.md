@@ -25,7 +25,7 @@ See [`GIT_WORKFLOW.md`](GIT_WORKFLOW.md). All manual changes go through the `cho
 ## Commands & conventions
 
 ```powershell
-scoop bucket add personal D:\Code\Web\pocket\bucket
+scoop bucket add pocket D:\Code\Web\pocket\bucket
 # local sync test
 .\bin\sync.ps1 -DryRun
 ```
