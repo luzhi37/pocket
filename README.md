@@ -5,7 +5,7 @@
 ## 注册
 
 ```powershell
-scoop bucket add personal https://github.com/luzhi37/pocket.git
+scoop bucket add pocket https://github.com/luzhi37/pocket.git
 ```
 
 ## 包列表
