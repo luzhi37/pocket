@@ -12,8 +12,8 @@ scoop bucket add pocket https://github.com/luzhi37/pocket.git
 
 | 名称 | 描述 | 版本 |
 |------|------|------|
-| [kimi-code](https://github.com/moonshotai/kimi-code) | AI coding agent CLI by Moonshot AI for terminal-based code editing, shell execution, and web retrieval. | 0.39.0 |
-| [kilocode](https://github.com/Kilo-Org/kilocode) | All-in-one agentic engineering platform. Build, ship, and iterate faster with the most popular open source coding agent. | 7.5.5 |
+| [kimi-code](https://github.com/moonshotai/kimi-code) | AI coding agent CLI by Moonshot AI for terminal-based code editing, shell execution, and web retrieval. | 0.39.1 |
+| [kilocode](https://github.com/Kilo-Org/kilocode) | All-in-one agentic engineering platform. Build, ship, and iterate faster with the most popular open source coding agent. | 7.5.6 |
 | [plannotator](https://github.com/backnotprop/plannotator) | Annotate and review coding agent plans and code diffs visually, share with your team, send feedback to agents with one click. | 0.27.9 |
 
 ## 自动同步
