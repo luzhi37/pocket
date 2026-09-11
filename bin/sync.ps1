@@ -85,6 +85,10 @@ function Update-ReadmeVersion($slug, $newVersion) {
 function Format-Json {
     param([Parameter(ValueFromPipeline)] [string]$Json)
     # Properly indent JSON with 4 spaces per level (fixes PowerShell's irregular ConvertTo-Json indentation)
+    # The tokenizer is escape-aware: inside a string, a backslash copies the next
+    # character verbatim (\" \\ \r \u003c ...). Without this, an escaped quote \"
+    # would flip us "out of the string" and re-indentation would corrupt string
+    # content (spaces dropped, commas/colons turned into structure).
     $indent = 0
     $sb = [System.Text.StringBuilder]::new()
     $i = 0
@@ -92,10 +96,18 @@ function Format-Json {
     # Tokenize and re-indent
     while ($i -lt $Json.Length) {
         $c = $Json[$i]
-        if ($c -eq '"') {
-            $inString = -not $inString
+        if ($inString) {
             [void]$sb.Append($c)
-        } elseif ($inString) {
+            if ($c -eq '\') {
+                if ($i + 1 -lt $Json.Length) {
+                    $i++
+                    [void]$sb.Append($Json[$i])
+                }
+            } elseif ($c -eq '"') {
+                $inString = $false
+            }
+        } elseif ($c -eq '"') {
+            $inString = $true
             [void]$sb.Append($c)
         } elseif ($c -in " ", "`t", "`r", "`n") {
             # skip whitespace outside strings
@@ -124,7 +136,12 @@ function Format-Json {
         }
         $i++
     }
-    return $sb.ToString().TrimEnd("`r", "`n") + "`n"
+    $out = $sb.ToString().TrimEnd("`r", "`n") + "`n"
+    # ConvertTo-Json (PS 5.1 and 7) escapes single quotes as \u0027; restore them
+    # so manifest strings keep literal quotes. The lookbehind leaves a genuine
+    # literal "\u0027" (stored in JSON as \\u0027) untouched.
+    $out = [regex]::Replace($out, '(?<!\\)\\u0027', "'")
+    return $out
 }
 
 Write-Host "`n=== Scoop Bucket Sync ===" -ForegroundColor Cyan
@@ -260,7 +277,10 @@ foreach ($m in $manifests) {
     }
 
     if (-not $DryRun) {
-        $updatedManifest | ConvertTo-Json -Depth 20 | Format-Json | Set-Content $m.FullName -Encoding UTF8
+        # BOM-less UTF-8: Set-Content -Encoding UTF8 writes a BOM on PS 5.1 (the CI
+        # runner), which strict JSON parsers reject.
+        $json = $updatedManifest | ConvertTo-Json -Depth 20 | Format-Json
+        [IO.File]::WriteAllText($m.FullName, $json, [System.Text.UTF8Encoding]::new($false))
         Update-ReadmeVersion $slug $newVersion
         $updated += $slug
         Write-Host "  Updated: $m.Name" -ForegroundColor Green

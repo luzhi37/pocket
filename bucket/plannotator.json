@@ -1,4 +1,4 @@
-﻿{
+{
     "version": "0.27.13",
     "description": "Annotate and review coding agent plans and code diffs visually, share with your team, send feedback to agents with one click.",
     "homepage": "https://plannotator.ai",
@@ -19,4 +19,3 @@
         "github": "backnotprop/plannotator"
     }
 }
-
